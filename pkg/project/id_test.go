@@ -16,9 +16,4 @@ func TestGetProjectID(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotEmpty(t, p)
 
-	projectKeys = []string{}
-
-	p, err = GetID()
-	assert.NotNil(t, err)
-
 }

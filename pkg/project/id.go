@@ -2,15 +2,14 @@ package project
 
 import (
 	"log"
-	"net/http"
 	"os"
 	"strings"
 
-	meta "cloud.google.com/go/compute/metadata"
+	"github.com/mchmarny/gcputil/pkg/meta"
 )
 
 var (
-	logger      = log.New(os.Stdout, "[ka] ", 0)
+	logger      = log.New(os.Stdout, "", 0)
 	agentName   = "gcputil"
 	projectKeys = []string{
 		"GCP_PROJECT",
@@ -37,33 +36,16 @@ func GetID() (project string, err error) {
 }
 
 func deriveProjectID(agent string) (p string, err error) {
-
 	for _, key := range projectKeys {
 		if val, ok := os.LookupEnv(key); ok {
 			logger.Printf("Found %s: %s", key, val)
 			return strings.TrimSpace(val), nil
 		}
 	}
-
-	mc := meta.NewClient(&http.Client{
-		Transport: userAgentTransport{
-			userAgent: agent,
-			base:      http.DefaultTransport,
-		},
-	})
-
-	return mc.ProjectID()
-
+	return meta.GetClient(agent).ProjectID()
 }
 
-type userAgentTransport struct {
-	userAgent string
-	base      http.RoundTripper
-}
-
-// RoundTrip implements the transport interface
-// // https://godoc.org/cloud.google.com/go/compute/metadata#example-NewClient
-func (t userAgentTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	req.Header.Set("User-Agent", t.userAgent)
-	return t.base.RoundTrip(req)
+// NumericProjectID returns the current instance's numeric project ID
+func NumericProjectID(agent string) (p string, err error) {
+	return meta.GetClient(agent).NumericProjectID()
 }
