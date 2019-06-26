@@ -12,13 +12,13 @@ func TestGetProjectID(t *testing.T) {
 		"GCP_PROJECT",
 	}
 
-	p, err := GetProjectID()
+	p, err := GetID()
 	assert.Nil(t, err)
 	assert.NotEmpty(t, p)
 
 	projectKeys = []string{}
 
-	p, err = GetProjectID()
+	p, err = GetID()
 	assert.NotNil(t, err)
 
 }

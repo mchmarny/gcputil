@@ -19,10 +19,10 @@ var (
 	}
 )
 
-// GetProjectIDOrFail checks common projectID env vars first,
+// GetIDOrFail checks common projectID env vars first,
 // then tries to retreave the project ID from meta data server
 // Fails if neither are not successful
-func GetProjectIDOrFail() string {
+func GetIDOrFail() string {
 	p, err := deriveProjectID(agentName)
 	if err != nil {
 		logger.Fatalf("Error while getting project ID: %v", err)
@@ -30,9 +30,9 @@ func GetProjectIDOrFail() string {
 	return p
 }
 
-// GetProjectID checks common projectID env vars first,
+// GetID checks common projectID env vars first,
 // then tries to retreave the project ID from meta data server
-func GetProjectID() (project string, err error) {
+func GetID() (project string, err error) {
 	return deriveProjectID(agentName)
 }
 

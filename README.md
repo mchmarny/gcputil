@@ -19,11 +19,11 @@ import "github.com/mchmarny/gcputil/pkg/project"
 #### Usage
 
 ```shell
-p, err := project.GetProjectID()
+p, err := project.GetID()
 ```
 
 Or alternatively, fail if not set
 
 ```shell
-p := project.GetProjectIDOrFail()
+p := project.GetID()
 ```
