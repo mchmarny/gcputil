@@ -4,13 +4,13 @@ In addition to all the built in metrics, the GPC Stackdriver also supports custo
 
 This utility simplifies the entire process related to creating creating and configuring custom metrics to two simple operations.
 
-#### Import
+## Import
 
 ```shell
 import "github.com/mchmarny/gcputil/pkg/metric"
 ```
 
-#### Usage
+## Usage
 
 To create a metric client and then submit 1 metrics
 
@@ -19,3 +19,7 @@ ctx := context.Background()
 c, err := metric.NewClient(ctx)
 err = c.Publish(ctx, "thermometer-1", "temperature", float64(36.1))
 ```
+
+## View
+
+![Chart](pkg/metric/img/sd.png "Stackdriver Chart")
