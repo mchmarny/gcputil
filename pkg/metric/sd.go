@@ -32,7 +32,7 @@ type Client struct {
 }
 
 // NewClient instantiates client
-func NewClient(ctx context.Context, metricType string) (client *Client, err error) {
+func NewClient(ctx context.Context) (client *Client, err error) {
 
 	// get project ID
 	p, err := project.GetID()

@@ -1,16 +1,16 @@
 # gcputil/project
 
-## Usage
+Many of the GPC client libraries still require `projectID` as an input parameter. For a long time the recommended practice was to set an environment variable (e.g. GCP_PROJECT, GOOGLE_CLOUD_PROJECT, GCLOUD_PROJECT or similar). Wile GCP now provides a metadata client to extract that data at runtime many libraries still demand it.
 
-Many of the GPC client libraries still require `projectID` as an input parameter. For a long time the practice was to set that as an environment variable. GCP also not provides a metadata client to extract that at runtime. This utility exposes two simple functions to test for project ID being set in environment variable or in metadata.
+This utility exposes two simple functions to test for presence of project ID in environment variable (useful in local dev) and if not set, tries to obtain that data from the GCP metadata service. All of that wrapped in a single static function.
 
-#### Import
+## Import
 
 ```shell
 import "github.com/mchmarny/gcputil/pkg/project"
 ```
 
-#### Usage
+## Usage
 
 ```shell
 p, err := project.GetID()
@@ -28,7 +28,7 @@ Or gt the configured meta object
 import "github.com/mchmarny/gcputil/pkg/meta"
 ```
 
-...and get access to all the other methods
+...and get access to all the other metadata service methods, for example
 
 ```shell
 name := meta.GetClient().InstanceName()

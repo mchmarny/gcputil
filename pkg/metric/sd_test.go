@@ -10,7 +10,7 @@ import (
 func TestMetric(t *testing.T) {
 
 	ctx := context.Background()
-	c, err := NewClient(ctx, "test")
+	c, err := NewClient(ctx)
 	assert.Nil(t, err)
 	assert.NotNil(t, c)
 
