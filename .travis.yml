@@ -1,0 +1,19 @@
+language: go
+
+go:
+  - "1.12"
+
+git:
+  quiet: true
+
+env:
+  - GO111MODULE=on
+
+branches:
+  only:
+    - master
+
+matrix:
+  fast_finish: true
+
+script: make test

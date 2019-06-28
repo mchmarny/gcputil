@@ -1,6 +1,6 @@
 
 test:
-	go test -v ./...
+	go test ./...
 
 mod:
 	go mod tidy
