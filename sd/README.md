@@ -7,7 +7,7 @@ This utility simplifies the entire process related to creating creating and conf
 ## Import
 
 ```shell
-import "github.com/mchmarny/gcputil/pkg/metric"
+import "github.com/mchmarny/gcputil/pkg/sd"
 ```
 
 ## Usage
@@ -16,7 +16,7 @@ To create a metric client and then submit 1 metrics
 
 ```shell
 ctx := context.Background()
-c, err := metric.NewClient(ctx)
+c, err := sd.NewClient(ctx)
 err = c.Publish(ctx, "thermometer-1", "temperature", float64(36.1))
 ```
 
