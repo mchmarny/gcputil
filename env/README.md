@@ -1,10 +1,10 @@
-# gcputil/env
+# gcputil/conf
 
 ## Import
 
 
 ```shell
-import "github.com/mchmarny/gcputil/env"
+import "github.com/mchmarny/gcputil/conf"
 ```
 
 ## Usage
@@ -12,11 +12,11 @@ import "github.com/mchmarny/gcputil/env"
 Parse string environment variable
 
 ```shell
-name := env.MustGetEnvVar("ENV_VAR_NAME", "default-name")
+name := conf.MustGetEnvVar("ENV_VAR_NAME", "default-value")
 ```
 
 Parse int environment variable
 
 ```shell
-name := env.MustGetIntEnvVar("HTTP_PORT", 8080)
+name := conf.MustGetIntEnvVar("HTTP_PORT", 8080)
 ```

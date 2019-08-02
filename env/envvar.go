@@ -1,4 +1,4 @@
-package project
+package env
 
 import (
 	"log"
