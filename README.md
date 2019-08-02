@@ -5,7 +5,7 @@ Collection of common golang GCP development patterns
 ## Usage
 
 * [Project](project/) (projectID as well as other meta client helpers)
-* [Stackdriver](sd/) (custom Stackdriver metric helper)
+* [Metric](metric/) (custom Stackdriver metric helper)
 * [Metadata](meta/) (metadata service helper)
 * [EnvVars](env/) (environment variables helper)
 

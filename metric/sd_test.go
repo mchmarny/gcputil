@@ -1,4 +1,4 @@
-package sd
+package metric
 
 import (
 	"context"
