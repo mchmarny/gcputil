@@ -1,4 +1,4 @@
-# gcputil/metric
+# gcputil/sd
 
 In addition to all the built in metrics, the GPC Stackdriver also supports custom metrics which enable developers to create time series based on application metrics defined by users.
 
