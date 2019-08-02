@@ -22,4 +22,4 @@ err = c.Publish(ctx, "thermometer-1", "temperature", float64(36.1))
 
 ## View
 
-![Chart](img/sd.png "Stackdriver Chart")
+![Chart](./sd.png "Stackdriver Chart")
