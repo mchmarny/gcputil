@@ -19,7 +19,7 @@ p, err := project.GetID()
 Or alternatively, fail if not set
 
 ```shell
-p := project.GetID()
+p := project.GetIDOrFail()
 ```
 
 Or gt the configured meta object

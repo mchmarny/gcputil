@@ -13,6 +13,8 @@ var (
 	agentName   = "gcputil"
 	projectKeys = []string{
 		"GCP_PROJECT",
+		"PROJECT",
+		"PROJECT_ID",
 		"GOOGLE_CLOUD_PROJECT",
 		"GCLOUD_PROJECT",
 	}
