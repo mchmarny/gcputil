@@ -1,4 +1,4 @@
-# gcputil/conf
+# gcputil/env
 
 ## Import
 
