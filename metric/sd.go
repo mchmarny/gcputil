@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/pkg/errors"
+
 	monitoring "cloud.google.com/go/monitoring/apiv3"
 	googlepb "github.com/golang/protobuf/ptypes/timestamp"
 	metricpb "google.golang.org/genproto/googleapis/api/metric"
@@ -28,7 +30,20 @@ var (
 // Client represents metric client
 type Client struct {
 	projectID    string
+	sourceID     string
 	metricClient *monitoring.MetricClient
+}
+
+// NewClientWithSource instantiates client with context and source ID
+func NewClientWithSource(ctx context.Context, sourceID string) (client *Client, err error) {
+
+	c, e := NewClient(ctx)
+	if e != nil {
+		return nil, errors.Wrap(e, "Error creating metric client with NewClientWithSource")
+	}
+	c.sourceID = sourceID
+	return c, nil
+
 }
 
 // NewClient instantiates client
@@ -37,14 +52,13 @@ func NewClient(ctx context.Context) (client *Client, err error) {
 	// get project ID
 	p, err := project.GetID()
 	if err != nil {
-		logger.Printf("Error while getting project ID: %v", err)
-		return nil, err
+		return nil, errors.Wrap(err, "Error while getting project ID")
 	}
 
 	// create metric client
 	mc, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
-		logger.Fatalf("Error creating metric client: %v", err)
+		return nil, errors.Wrap(err, "Error creating metric client with NewClient")
 	}
 
 	return &Client{
@@ -54,22 +68,46 @@ func NewClient(ctx context.Context) (client *Client, err error) {
 
 }
 
+// PublishForSource publishes time series based on the preconfigured metric and value to Stackdriver
+// Example: `PublishForSource(ctx, "friction", 0.125)``
+func (c *Client) PublishForSource(ctx context.Context, metricType string, metricValue interface{}) error {
+	if c.sourceID == "" {
+		return errors.New("Source ID not configured")
+	}
+	return c.Publish(ctx, c.sourceID, metricType, metricValue)
+}
+
 // Publish publishes time series based on metric and value to Stackdriver
 // Example: `Publish(ctx, "device1", "friction", 0.125)``
 func (c *Client) Publish(ctx context.Context, sourceID, metricType string, metricValue interface{}) error {
 
 	// derive typed value from passed interface
+	// HACK: everything in stackdriver seems to be casting to double anyway so to avoid
+	//       errors, capture the passed type and convert to double
+	// https://github.com/census-instrumentation/opencensus-python/pull/696
 	var val *monitoringpb.TypedValue
 	switch v := metricValue.(type) {
 	default:
-		return fmt.Errorf("Unsupported metric type: %T", v)
+		return errors.Errorf("Unsupported metric type: %T", v)
+	case float32:
+		val = &monitoringpb.TypedValue{
+			Value: &monitoringpb.TypedValue_DoubleValue{DoubleValue: float64(metricValue.(float32))},
+		}
 	case float64:
 		val = &monitoringpb.TypedValue{
 			Value: &monitoringpb.TypedValue_DoubleValue{DoubleValue: metricValue.(float64)},
 		}
+	case int:
+		val = &monitoringpb.TypedValue{
+			Value: &monitoringpb.TypedValue_DoubleValue{DoubleValue: float64(metricValue.(int))},
+		}
+	case int32:
+		val = &monitoringpb.TypedValue{
+			Value: &monitoringpb.TypedValue_DoubleValue{DoubleValue: float64(metricValue.(int32))},
+		}
 	case int64:
 		val = &monitoringpb.TypedValue{
-			Value: &monitoringpb.TypedValue_Int64Value{Int64Value: metricValue.(int64)},
+			Value: &monitoringpb.TypedValue_DoubleValue{DoubleValue: float64(metricValue.(int64))},
 		}
 	}
 
@@ -91,7 +129,7 @@ func (c *Client) Publish(ctx context.Context, sourceID, metricType string, metri
 						"source_id": sourceID,
 						// random label to work around SD complaining
 						// about multiple events for same time window
-						"rnd_label": fmt.Sprint(rand.Intn(100)),
+						"random_label": fmt.Sprint(rand.Intn(100)),
 					},
 				},
 				Resource: &monitoredrespb.MonitoredResource{
