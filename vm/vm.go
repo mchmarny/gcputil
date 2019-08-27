@@ -14,7 +14,7 @@ import (
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iam/v1"
 
-	mt "github.com/mchmarny/gcputil/meta"
+	"github.com/mchmarny/gcputil/meta"
 )
 
 var (
@@ -36,7 +36,7 @@ func failOnErr(err error) {
 // in this method will be fatal
 func ShutdownHostVM(ctx context.Context, agent string) {
 
-	mc := mt.GetClient(agent)
+	mc := meta.GetClient(agent)
 
 	projectID, err := mc.ProjectID()
 	failOnErr(err)

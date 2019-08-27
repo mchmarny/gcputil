@@ -21,7 +21,7 @@ func MustGetEnvVar(key, fallbackValue string) string {
 		logger.Fatalf("Required envvar not set: %s", key)
 	}
 
-	logger.Printf("%s: %s (not set, using default)", key, fallbackValue)
+	logger.Printf("'%s' not set, using default: '%s')", key, fallbackValue)
 	return fallbackValue
 }
 
@@ -36,6 +36,6 @@ func MustGetIntEnvVar(key string, fallbackValue int) int {
 		}
 		return port
 	}
-	logger.Printf("%s: %d (not set, using default)", key, fallbackValue)
+	logger.Printf("'%s' not set, using default: %d)", key, fallbackValue)
 	return fallbackValue
 }

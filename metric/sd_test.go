@@ -35,16 +35,19 @@ func TestMetricWithSource(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, c)
 
-	err = c.PublishForSource(ctx, "test-metric", float64(1.23))
+	err = c.PublishForSource(ctx, "test-float64-metric", float64(1.23))
 	assert.Nil(t, err)
 
-	err = c.PublishForSource(ctx, "test-metric", float32(1.23))
+	err = c.PublishForSource(ctx, "test-float32-metric", float32(1.23))
 	assert.Nil(t, err)
 
-	err = c.PublishForSource(ctx, "test-metric", int64(4))
+	err = c.PublishForSource(ctx, "test-int64-metric", int64(4))
 	assert.Nil(t, err)
 
-	err = c.PublishForSource(ctx, "test-metric", int(1))
+	err = c.PublishForSource(ctx, "test-int-metric", int(1))
+	assert.Nil(t, err)
+
+	err = c.CountForSource(ctx, "test-count-metric")
 	assert.Nil(t, err)
 
 }

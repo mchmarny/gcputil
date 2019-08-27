@@ -48,7 +48,7 @@ func deriveProjectID(agent string) (p string, err error) {
 	return meta.GetClient(agent).ProjectID()
 }
 
-// NumericProjectID returns the current instance's numeric project ID
-func NumericProjectID(agent string) (p string, err error) {
+// GetNumericProjectID returns the current instance's numeric project ID
+func GetNumericProjectID(agent string) (p string, err error) {
 	return meta.GetClient(agent).NumericProjectID()
 }

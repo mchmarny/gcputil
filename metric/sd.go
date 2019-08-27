@@ -77,6 +77,16 @@ func (c *Client) PublishForSource(ctx context.Context, metricType string, metric
 	return c.Publish(ctx, c.sourceID, metricType, metricValue)
 }
 
+// CountForSource publishes time series based on metric +1 value to Stackdriver
+func (c *Client) CountForSource(ctx context.Context, metricType string) error {
+	if c.sourceID == "" {
+		return errors.New("Source ID not configured")
+	}
+	return publish(ctx, c, c.sourceID, metricType, &monitoringpb.TypedValue{
+		Value: &monitoringpb.TypedValue_DoubleValue{DoubleValue: float64(1)},
+	})
+}
+
 // Publish publishes time series based on metric and value to Stackdriver
 // Example: `Publish(ctx, "device1", "friction", 0.125)``
 func (c *Client) Publish(ctx context.Context, sourceID, metricType string, metricValue interface{}) error {
@@ -111,11 +121,17 @@ func (c *Client) Publish(ctx context.Context, sourceID, metricType string, metri
 		}
 	}
 
+	return publish(ctx, c, sourceID, metricType, val)
+
+}
+
+func publish(ctx context.Context, c *Client, sourceID, metricType string, metricValue *monitoringpb.TypedValue) error {
+
 	// create data point
 	ptTs := &googlepb.Timestamp{Seconds: time.Now().Unix()}
 	dataPoint := &monitoringpb.Point{
 		Interval: &monitoringpb.TimeInterval{StartTime: ptTs, EndTime: ptTs},
-		Value:    val,
+		Value:    metricValue,
 	}
 
 	// create time series request with the data point
