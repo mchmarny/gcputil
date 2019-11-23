@@ -14,40 +14,20 @@ func TestMetric(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, c)
 
-	err = c.Publish(ctx, "test1", "test-metric", float64(1.23))
+	labels := make(map[string]string, 0)
+	labels["test_metric"] = "test1"
+	labels["other_metric"] = "test2"
+
+	err = c.Publish(ctx, "test-metric", float64(1.23), labels)
 	assert.Nil(t, err)
 
-	err = c.Publish(ctx, "test1", "test-metric", float32(1.23))
+	err = c.Publish(ctx, "test-metric", float32(1.23), labels)
 	assert.Nil(t, err)
 
-	err = c.Publish(ctx, "test1", "test-metric", int64(4))
+	err = c.Publish(ctx, "test-metric", int64(4), labels)
 	assert.Nil(t, err)
 
-	err = c.Publish(ctx, "test1", "test-metric", int(1))
-	assert.Nil(t, err)
-
-}
-
-func TestMetricWithSource(t *testing.T) {
-
-	ctx := context.Background()
-	c, err := NewClientWithSource(ctx, "test2")
-	assert.Nil(t, err)
-	assert.NotNil(t, c)
-
-	err = c.PublishForSource(ctx, "test-float64-metric", float64(1.23))
-	assert.Nil(t, err)
-
-	err = c.PublishForSource(ctx, "test-float32-metric", float32(1.23))
-	assert.Nil(t, err)
-
-	err = c.PublishForSource(ctx, "test-int64-metric", int64(4))
-	assert.Nil(t, err)
-
-	err = c.PublishForSource(ctx, "test-int-metric", int(1))
-	assert.Nil(t, err)
-
-	err = c.CountForSource(ctx, "test-count-metric")
+	err = c.Publish(ctx, "test-metric", int(1), labels)
 	assert.Nil(t, err)
 
 }

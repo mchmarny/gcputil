@@ -68,28 +68,29 @@ func NewClient(ctx context.Context) (client *Client, err error) {
 
 }
 
-// PublishForSource publishes time series based on the preconfigured metric and value to Stackdriver
-// Example: `PublishForSource(ctx, "friction", 0.125)``
-func (c *Client) PublishForSource(ctx context.Context, metricType string, metricValue interface{}) error {
-	if c.sourceID == "" {
-		return errors.New("Source ID not configured")
-	}
-	return c.Publish(ctx, c.sourceID, metricType, metricValue)
-}
+func MetricClient(ctx context.Context) *Client {
 
-// CountForSource publishes time series based on metric +1 value to Stackdriver
-func (c *Client) CountForSource(ctx context.Context, metricType string) error {
-	if c.sourceID == "" {
-		return errors.New("Source ID not configured")
+	// get project ID
+	p, err := project.GetID()
+	if err != nil {
+		logger.Fatalf("Error while getting project ID: %v", err)
 	}
-	return publish(ctx, c, c.sourceID, metricType, &monitoringpb.TypedValue{
-		Value: &monitoringpb.TypedValue_DoubleValue{DoubleValue: float64(1)},
-	})
+
+	// create metric client
+	mc, err := monitoring.NewMetricClient(ctx)
+	if err != nil {
+		logger.Fatalf("Error creating metric client with NewClient: %v", err)
+	}
+
+	return &Client{
+		projectID:    p,
+		metricClient: mc,
+	}
+
 }
 
 // Publish publishes time series based on metric and value to Stackdriver
-// Example: `Publish(ctx, "device1", "friction", 0.125)``
-func (c *Client) Publish(ctx context.Context, sourceID, metricType string, metricValue interface{}) error {
+func (c *Client) Publish(ctx context.Context, metricType string, metricValue interface{}, labels map[string]string) error {
 
 	// derive typed value from passed interface
 	// HACK: everything in stackdriver seems to be casting to double anyway so to avoid
@@ -121,11 +122,11 @@ func (c *Client) Publish(ctx context.Context, sourceID, metricType string, metri
 		}
 	}
 
-	return publish(ctx, c, sourceID, metricType, val)
+	return publish(ctx, c, metricType, val, labels)
 
 }
 
-func publish(ctx context.Context, c *Client, sourceID, metricType string, metricValue *monitoringpb.TypedValue) error {
+func publish(ctx context.Context, c *Client, metricType string, metricValue *monitoringpb.TypedValue, labels map[string]string) error {
 
 	// create data point
 	ptTs := &googlepb.Timestamp{Seconds: time.Now().Unix()}
@@ -134,19 +135,19 @@ func publish(ctx context.Context, c *Client, sourceID, metricType string, metric
 		Value:    metricValue,
 	}
 
+	// random label to work around SD complaining
+	// about multiple events for same minute
+	rand.Seed(time.Now().UnixNano())
+	labels["random_label"] = fmt.Sprint(rand.Intn(100))
+
 	// create time series request with the data point
 	tsRequest := &monitoringpb.CreateTimeSeriesRequest{
 		Name: monitoring.MetricProjectPath(c.projectID),
 		TimeSeries: []*monitoringpb.TimeSeries{
 			{
 				Metric: &metricpb.Metric{
-					Type: fmt.Sprintf("%s/%s", metricTypePrefix, metricType),
-					Labels: map[string]string{
-						"source_id": sourceID,
-						// random label to work around SD complaining
-						// about multiple events for same time window
-						"random_label": fmt.Sprint(rand.Intn(100)),
-					},
+					Type:   fmt.Sprintf("%s/%s", metricTypePrefix, metricType),
+					Labels: labels,
 				},
 				Resource: &monitoredrespb.MonitoredResource{
 					Type:   "global",
