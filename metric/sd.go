@@ -34,18 +34,6 @@ type Client struct {
 	metricClient *monitoring.MetricClient
 }
 
-// NewClientWithSource instantiates client with context and source ID
-func NewClientWithSource(ctx context.Context, sourceID string) (client *Client, err error) {
-
-	c, e := NewClient(ctx)
-	if e != nil {
-		return nil, errors.Wrap(e, "Error creating metric client with NewClientWithSource")
-	}
-	c.sourceID = sourceID
-	return c, nil
-
-}
-
 // NewClient instantiates client
 func NewClient(ctx context.Context) (client *Client, err error) {
 
@@ -68,6 +56,7 @@ func NewClient(ctx context.Context) (client *Client, err error) {
 
 }
 
+// MetricClient creates new metrics client or fails 
 func MetricClient(ctx context.Context) *Client {
 
 	// get project ID
@@ -138,7 +127,7 @@ func publish(ctx context.Context, c *Client, metricType string, metricValue *mon
 	// random label to work around SD complaining
 	// about multiple events for same minute
 	rand.Seed(time.Now().UnixNano())
-	labels["random_label"] = fmt.Sprint(rand.Intn(100))
+	labels["random"] = fmt.Sprint(rand.Intn(100))
 
 	// create time series request with the data point
 	tsRequest := &monitoringpb.CreateTimeSeriesRequest{
