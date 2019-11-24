@@ -19,12 +19,9 @@ import (
 	"github.com/mchmarny/gcputil/project"
 )
 
-const (
-	metricTypePrefix = "custom.googleapis.com/metric"
-)
-
 var (
-	logger = log.New(os.Stdout, "", 0)
+	logger           = log.New(os.Stdout, "", 0)
+	metricTypePrefix = "custom.googleapis.com/metric"
 )
 
 // Client represents metric client
@@ -56,8 +53,8 @@ func NewClient(ctx context.Context) (client *Client, err error) {
 
 }
 
-// MetricClient creates new metrics client or fails 
-func MetricClient(ctx context.Context) *Client {
+// MakeClient creates new metrics client or fails
+func MakeClient(ctx context.Context) *Client {
 
 	// get project ID
 	p, err := project.GetID()
@@ -127,7 +124,7 @@ func publish(ctx context.Context, c *Client, metricType string, metricValue *mon
 	// random label to work around SD complaining
 	// about multiple events for same minute
 	rand.Seed(time.Now().UnixNano())
-	labels["random"] = fmt.Sprint(rand.Intn(100))
+	labels["random"] = fmt.Sprint(rand.Intn(1000))
 
 	// create time series request with the data point
 	tsRequest := &monitoringpb.CreateTimeSeriesRequest{

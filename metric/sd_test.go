@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMetric(t *testing.T) {
+func TestNewClient(t *testing.T) {
 
 	ctx := context.Background()
 	c, err := NewClient(ctx)
@@ -28,6 +28,21 @@ func TestMetric(t *testing.T) {
 	assert.Nil(t, err)
 
 	err = c.Publish(ctx, "test-metric", int(1), labels)
+	assert.Nil(t, err)
+
+}
+
+func TestMakeClient(t *testing.T) {
+
+	ctx := context.Background()
+
+	labels := make(map[string]string, 0)
+	labels["test_metric"] = "test1"
+	labels["other_metric"] = "test2"
+
+	var err error
+	err = MakeClient(ctx).Publish(ctx, "test-metric", int64(123456), labels)
+	err = MakeClient(ctx).Publish(ctx, "test-metric", int64(123456), labels)
 	assert.Nil(t, err)
 
 }
